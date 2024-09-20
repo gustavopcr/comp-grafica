@@ -28,7 +28,6 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
-#define NUM_FRAMES 3
 int main ()
 {
 	// Tell the window to use vysnc and work on high DPI displays
@@ -46,11 +45,10 @@ int main ()
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
 	Texture2D button = LoadTexture("line.png"); // Load button texture
 
-	// Define frame rectangle for drawing
-    float frameHeight = (float)button.height/NUM_FRAMES;
-    Rectangle sourceRec = { 0, 0, (float)button.width, frameHeight };
+
+    Rectangle sourceRec = { 0, 0, (float)button.width, (float)button.height };
 	// Define button bounds on screen
-    Rectangle btnBounds = { screenWidth/2.0f - button.width/2.0f, screenHeight/2.0f - button.height/NUM_FRAMES/2.0f, (float)button.width, frameHeight };
+    Rectangle btnBounds = { 10.0f, 10.0f, (float)button.width, (float)button.height };
 
     int btnState = 0;               // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
     bool btnAction = false;         // Button action should be activated
@@ -84,7 +82,7 @@ int main ()
         }
 
         // Calculate button frame rectangle to draw depending on button state
-        sourceRec.y = btnState*frameHeight;
+        sourceRec.y = btnState*(float)button.height;
         //----------------------------------------------------------------------------------
 
 

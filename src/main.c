@@ -31,10 +31,18 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 typedef struct{
 	Texture2D texture;
-	Rectangle sourceRec;
-	Rectangle btnBounds;
-	bool btnAction;
+	Rectangle source;
+	Rectangle bounds;
+	bool action;
 }ActionButton;
+
+
+void initActionButton(ActionButton* ab, Texture2D t, Rectangle source, Rectangle bounds, bool action){
+	ab->texture = t;
+	ab->source = source;
+	ab->bounds = bounds;
+	ab->action = action;
+}
 
 int main ()
 {
@@ -50,7 +58,6 @@ int main ()
 	SearchAndSetResourceDir("resources");
 
 	// Load a texture from the resources directory
-	Texture wabbit = LoadTexture("wabbit_alpha.png");
 	Texture2D buttonTexture = LoadTexture("line.png"); // Load button texture
 
 
@@ -68,15 +75,15 @@ int main ()
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
 		mousePoint = GetMousePosition();
-        pointBtn.btnAction = false;
+        pointBtn.action = false;
 
 		// Check button state
-        if (CheckCollisionPointRec(mousePoint, pointBtn.btnBounds))
+        if (CheckCollisionPointRec(mousePoint, pointBtn.bounds))
         {
-            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) pointBtn.btnAction = true;
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) pointBtn.action = true;
         }
 
-        if (pointBtn.btnAction)
+        if (pointBtn.action)
         {
 			// TODO: Any desired action
             for(int i=0; i<100; i++){
@@ -97,7 +104,7 @@ int main ()
 
 		// draw some text using the default font
 		DrawText("Hello Raylib", 200,200,20,BLACK);
-		DrawTextureRec(pointBtn.texture, sourceRec, (Vector2){ pointBtn.btnBounds.x, pointBtn.btnBounds.y }, WHITE); // Draw button frame
+		DrawTextureRec(pointBtn.texture, sourceRec, (Vector2){ pointBtn.bounds.x, pointBtn.bounds.y }, WHITE); // Draw button frame
 		// draw our texture to the screen
 		//DrawTexture(wabbit, 400, 200, WHITE);
 		
@@ -107,7 +114,6 @@ int main ()
 
 	// cleanup
 	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
 	UnloadTexture(buttonTexture);
 
 	// destory the window and cleanup the OpenGL context

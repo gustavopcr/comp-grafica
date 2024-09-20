@@ -30,9 +30,9 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 
 typedef struct{
+	Texture2D texture;
 	Rectangle sourceRec;
 	Rectangle btnBounds;
-	int state;
 	bool btnAction;
 }ActionButton;
 
@@ -51,15 +51,14 @@ int main ()
 
 	// Load a texture from the resources directory
 	Texture wabbit = LoadTexture("wabbit_alpha.png");
-	Texture2D button = LoadTexture("line.png"); // Load button texture
+	Texture2D buttonTexture = LoadTexture("line.png"); // Load button texture
 
 
-    Rectangle sourceRec = { 0, 0, (float)button.width, (float)button.height };
+    Rectangle sourceRec = { 0, 0, (float)buttonTexture.width, (float)buttonTexture.height };
 	// Define button bounds on screen
-    Rectangle btnBounds = { 10.0f, 10.0f, (float)button.width, (float)button.height };
+    Rectangle btnBounds = { 10.0f, 10.0f, (float)buttonTexture.width, (float)buttonTexture.height };
 	
-	ActionButton pointBtn = {sourceRec, btnBounds, 0, false};
-    pointBtn.state = 0;               // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
+	ActionButton pointBtn = {buttonTexture, sourceRec, btnBounds, false};           // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
     //pointBtn.btnAction = false;         // Button action should be activated
 
     Vector2 mousePoint = { 0.0f, 0.0f };
@@ -74,24 +73,19 @@ int main ()
 		// Check button state
         if (CheckCollisionPointRec(mousePoint, pointBtn.btnBounds))
         {
-            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) pointBtn.state = 2;
-            else pointBtn.state = 1;
-
             if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) pointBtn.btnAction = true;
         }
-        else pointBtn.state = 0;
 
         if (pointBtn.btnAction)
         {
+			// TODO: Any desired action
             for(int i=0; i<100; i++){
 				DrawPixel(100+i, 100+i, PURPLE);
-			}
-
-            // TODO: Any desired action
+			}            
         }
 
         // Calculate button frame rectangle to draw depending on button state
-        sourceRec.y = pointBtn.state*(float)button.height;
+        sourceRec.y = (float)pointBtn.texture.height;
         //----------------------------------------------------------------------------------
 
 
@@ -103,7 +97,7 @@ int main ()
 
 		// draw some text using the default font
 		DrawText("Hello Raylib", 200,200,20,BLACK);
-		DrawTextureRec(button, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE); // Draw button frame
+		DrawTextureRec(pointBtn.texture, sourceRec, (Vector2){ pointBtn.btnBounds.x, pointBtn.btnBounds.y }, WHITE); // Draw button frame
 		// draw our texture to the screen
 		//DrawTexture(wabbit, 400, 200, WHITE);
 		
@@ -114,7 +108,7 @@ int main ()
 	// cleanup
 	// unload our texture so it can be cleaned up
 	UnloadTexture(wabbit);
-	UnloadTexture(button);
+	UnloadTexture(buttonTexture);
 
 	// destory the window and cleanup the OpenGL context
 	CloseWindow();

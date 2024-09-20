@@ -28,6 +28,14 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
+
+typedef struct{
+	Rectangle sourceRec;
+	Rectangle btnBounds;
+	int state;
+	bool btnAction;
+}ActionButton;
+
 int main ()
 {
 	// Tell the window to use vysnc and work on high DPI displays
@@ -49,9 +57,10 @@ int main ()
     Rectangle sourceRec = { 0, 0, (float)button.width, (float)button.height };
 	// Define button bounds on screen
     Rectangle btnBounds = { 10.0f, 10.0f, (float)button.width, (float)button.height };
-
-    int btnState = 0;               // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
-    bool btnAction = false;         // Button action should be activated
+	
+	ActionButton pointBtn = {sourceRec, btnBounds, 0, false};
+    pointBtn.state = 0;               // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
+    //pointBtn.btnAction = false;         // Button action should be activated
 
     Vector2 mousePoint = { 0.0f, 0.0f };
 
@@ -60,19 +69,19 @@ int main ()
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
 		mousePoint = GetMousePosition();
-        btnAction = false;
+        pointBtn.btnAction = false;
 
 		// Check button state
-        if (CheckCollisionPointRec(mousePoint, btnBounds))
+        if (CheckCollisionPointRec(mousePoint, pointBtn.btnBounds))
         {
-            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) btnState = 2;
-            else btnState = 1;
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) pointBtn.state = 2;
+            else pointBtn.state = 1;
 
-            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) btnAction = true;
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) pointBtn.btnAction = true;
         }
-        else btnState = 0;
+        else pointBtn.state = 0;
 
-        if (btnAction)
+        if (pointBtn.btnAction)
         {
             for(int i=0; i<100; i++){
 				DrawPixel(100+i, 100+i, PURPLE);
@@ -82,7 +91,7 @@ int main ()
         }
 
         // Calculate button frame rectangle to draw depending on button state
-        sourceRec.y = btnState*(float)button.height;
+        sourceRec.y = pointBtn.state*(float)button.height;
         //----------------------------------------------------------------------------------
 
 

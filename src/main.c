@@ -28,6 +28,10 @@ For a C++ project simply rename the file to .cpp and re-run the build script
 
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
 
+#include <stdlib.h> 
+#include <stdio.h>
+#include <math.h>
+
 
 typedef struct{
 	Texture2D texture;
@@ -51,6 +55,29 @@ void doAction(char action, Vector2* pointsArr){
 
 			break;
 		default:
+	}
+}
+
+
+void  dda(int x1, int y1, int x2, int y2){
+	int dx=0, dy=0, passos=0, k=0;
+	float x_incr=0.0f, y_incr=0.0f, x=0.0f, y=0.0f;
+
+	dx = x2-x1;
+	dy = y2-y1;
+	if(abs(dx) > abs(dy))
+		passos = abs(dx);
+	else
+		passos = abs(dy);
+	
+	x_incr = (float)dx / passos;
+	y_incr = (float)dy / passos;
+	x = x1; y = y1;
+	DrawPixel(round(x), round(y), PURPLE);
+	for(k=0; k<=passos;k++){
+		x = x + x_incr;
+		y = y + y_incr;
+		DrawPixel(round(x), round(y), PURPLE);
 	}
 }
 
@@ -90,7 +117,7 @@ int main ()
         {
             if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
 				btnPoint.action = true;
-				actionMode += LINE_MODE;
+				actionMode = LINE_MODE;
 			}
 		}
 
@@ -119,10 +146,12 @@ int main ()
 		// draw our texture to the screen
 		//DrawTexture(wabbit, 400, 200, WHITE);
 
-		if(i==3){
-			for(int p=0; p<3; p++){
-				DrawPixelV(pointsArr[p], PURPLE);
-			}
+		if(i==2){
+			printf("x1:%f y1:%f\n x2:%f y2:%f", pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
+			
+			dda(pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
+			//dda(800, 800, 100, 100);
+			
 			i=0;
 		}
 

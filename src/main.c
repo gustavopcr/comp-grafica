@@ -44,10 +44,24 @@ void initActionButton(ActionButton* ab, Texture2D t, Rectangle source, Rectangle
 	ab->action = action;
 }
 
+
+void doAction(char action, Vector2* pointsArr){
+	switch(action){
+		case 1:
+
+			break;
+		default:
+	}
+}
+
 int main ()
 {
 	// Tell the window to use vysnc and work on high DPI displays
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+	SetTargetFPS(60);
+
+	char actionMode = 0; // cada byte representa uma funcionalidade
+	const char LINE_MODE = 1; // gerar pontos ao clicar
 
 	// Create the window and OpenGL context
 	const int screenWidth = 1200;
@@ -57,57 +71,61 @@ int main ()
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
-	// Load a texture from the resources directory
+	Vector2 pointsArr[3] = { {0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}};
 	Texture2D buttonTexture = LoadTexture("line.png"); // Load button texture
-
-
     Rectangle sourceRec = { 0, 0, (float)buttonTexture.width, (float)buttonTexture.height };
-	// Define button bounds on screen
-    Rectangle btnBounds = { 10.0f, 10.0f, (float)buttonTexture.width, (float)buttonTexture.height };
-	
-	ActionButton pointBtn = {buttonTexture, sourceRec, btnBounds, false};           // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
-    //pointBtn.btnAction = false;         // Button action should be activated
-
+    Rectangle boundsRec = { 10.0f, 10.0f, (float)buttonTexture.width, (float)buttonTexture.height };
+	ActionButton btnPoint = {buttonTexture, sourceRec, boundsRec, false};           // Button state: 0-NORMAL, 1-MOUSE_HOVER, 2-PRESSED
     Vector2 mousePoint = { 0.0f, 0.0f };
+	int i = 0;
 
-    SetTargetFPS(60);
+	
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
-		mousePoint = GetMousePosition();
-        pointBtn.action = false;
+        btnPoint.action = false;
 
 		// Check button state
-        if (CheckCollisionPointRec(mousePoint, pointBtn.bounds))
+        if (CheckCollisionPointRec(mousePoint, btnPoint.bounds))
         {
-            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) pointBtn.action = true;
-        }
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+				btnPoint.action = true;
+				actionMode += LINE_MODE;
+			}
+		}
 
-        if (pointBtn.action)
-        {
-			// TODO: Any desired action
-            for(int i=0; i<100; i++){
-				DrawPixel(100+i, 100+i, PURPLE);
-			}            
-        }
-
+		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+			mousePoint = GetMousePosition();
+			if(actionMode == 1){
+				pointsArr[i++] = GetMousePosition();
+			}
+			printf("x:%f y:%f\n", mousePoint.x, mousePoint.y);
+		}
         // Calculate button frame rectangle to draw depending on button state
-        sourceRec.y = (float)pointBtn.texture.height;
+        sourceRec.y = (float)btnPoint.texture.height;
         //----------------------------------------------------------------------------------
 
-
+		//doAction(actionMode, i, &pointsArr);
+		
+		
 		// drawing
 		BeginDrawing();
 
 		// Setup the backbuffer for drawing (clear color and depth buffers)
-		ClearBackground(BLACK);
-
+		//ClearBackground(BLACK);
 		// draw some text using the default font
 		DrawText("Hello Raylib", 200,200,20,BLACK);
-		DrawTextureRec(pointBtn.texture, sourceRec, (Vector2){ pointBtn.bounds.x, pointBtn.bounds.y }, WHITE); // Draw button frame
+		DrawTextureRec(btnPoint.texture, sourceRec, (Vector2){ btnPoint.bounds.x, btnPoint.bounds.y }, WHITE); // Draw button frame
 		// draw our texture to the screen
 		//DrawTexture(wabbit, 400, 200, WHITE);
-		
+
+		if(i==3){
+			for(int p=0; p<3; p++){
+				DrawPixelV(pointsArr[p], PURPLE);
+			}
+			i=0;
+		}
+
 		// end the frame and get ready for the next one  (display frame, poll input, etc...)
 		EndDrawing();
 	}

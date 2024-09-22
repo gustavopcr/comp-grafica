@@ -130,6 +130,33 @@ void bresenham(int x1, int y1, int x2, int y2){
 		}
 	}
 }
+
+void plotCirclePoints(int xc, int yc, int x, int y){
+	DrawPixel(xc+x, yc+y, PURPLE);
+	DrawPixel(xc-x, yc+y, PURPLE);
+	DrawPixel(xc+x, yc-y, PURPLE);
+	DrawPixel(xc-x, yc-y, PURPLE);
+	DrawPixel(xc+y, yc+x, PURPLE);
+	DrawPixel(xc-y, yc+x, PURPLE);
+	DrawPixel(xc+y, yc-x, PURPLE);
+	DrawPixel(xc-y, yc-x, PURPLE);
+}
+
+void circBresenhams(int xc, int yc, int r){
+	int x, y, p;
+	x=0; y=r; p=3-2*r;
+	plotCirclePoints(xc, yc, x, y);
+	while(x<y){
+		if(p<0){
+			p=p+4*x+6;
+		}else{
+			p=p+4*(4-y)+10;
+			y=y-1;
+		}
+		x=x+1;
+		plotCirclePoints(xc, yc, x, y);
+	}
+}
 int main ()
 {
 	// Tell the window to use vysnc and work on high DPI displays
@@ -198,8 +225,8 @@ int main ()
 		if(i==2){
 			printf("x1:%f y1:%f\n x2:%f y2:%f", pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
 			//dda(pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
-			bresenham((int)pointsArr[0].x, (int)pointsArr[0].y, (int)pointsArr[1].x, (int)pointsArr[1].y);
-			
+			//bresenham((int)pointsArr[0].x, (int)pointsArr[0].y, (int)pointsArr[1].x, (int)pointsArr[1].y);
+			circBresenhams((int)pointsArr[0].x, (int)pointsArr[0].y, 10);
 			//dda(800, 800, 100, 100);
 			
 			i=0;

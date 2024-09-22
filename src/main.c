@@ -81,6 +81,55 @@ void  dda(int x1, int y1, int x2, int y2){
 	}
 }
 
+void bresenham(int x1, int y1, int x2, int y2){
+	int dx, dy, x, y, const1, const2, p, incrx, incry;
+	dx = x2-x1;
+	dy = y2-y1;
+	if (dx >= 0)
+		incrx = 1;
+	else{
+		incrx = -1;
+		dx = dx*-1;
+	}
+	if(dy>=0)
+		incry = 1;
+	else{
+		incry = -1;
+		dy = dy*-1;
+	}
+	x = x1;
+	y = y1;
+	DrawPixel(x, y, PURPLE);
+	if(dy<dx){
+		p = 2*dy, -dx;
+		const1=2*dy;
+		const2=2*(dy-dx);
+		for(int i=0; i<dx; i++){
+			x += incrx;
+			if(p<0)
+				p += const1;
+			else{
+				y += incry;
+				p+= const2;
+			}
+			DrawPixel(x, y, PURPLE);
+		}
+	}else{
+		p=2*dx-dy;
+		const1=2*dx;
+		const2=2*(dx-dy);
+		for(int i=0; i< dy; i++){
+			y += incry;
+			if(p<0)
+				p+=const1;
+			else{
+				x+=incrx;
+				p+=const2;
+			}
+			DrawPixel(x, y, PURPLE);
+		}
+	}
+}
 int main ()
 {
 	// Tell the window to use vysnc and work on high DPI displays
@@ -106,8 +155,12 @@ int main ()
     Vector2 mousePoint = { 0.0f, 0.0f };
 	int i = 0;
 
+	BeginDrawing();
+	DrawTextureRec(btnPoint.texture, sourceRec, (Vector2){ btnPoint.bounds.x, btnPoint.bounds.y }, WHITE); // Draw button frame
+	EndDrawing();
 	
 	// game loop
+	// #TODO: CASO CLICK FOR NO BOTAO, NAO COMPUTAR CLICK
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
         btnPoint.action = false;
@@ -133,23 +186,20 @@ int main ()
         //----------------------------------------------------------------------------------
 
 		//doAction(actionMode, i, &pointsArr);
-		
-		
 		// drawing
 		BeginDrawing();
 
 		// Setup the backbuffer for drawing (clear color and depth buffers)
 		//ClearBackground(BLACK);
 		// draw some text using the default font
-		DrawText("Hello Raylib", 200,200,20,BLACK);
-		DrawTextureRec(btnPoint.texture, sourceRec, (Vector2){ btnPoint.bounds.x, btnPoint.bounds.y }, WHITE); // Draw button frame
 		// draw our texture to the screen
 		//DrawTexture(wabbit, 400, 200, WHITE);
 
 		if(i==2){
 			printf("x1:%f y1:%f\n x2:%f y2:%f", pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
+			//dda(pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
+			bresenham((int)pointsArr[0].x, (int)pointsArr[0].y, (int)pointsArr[1].x, (int)pointsArr[1].y);
 			
-			dda(pointsArr[0].x, pointsArr[0].y, pointsArr[1].x, pointsArr[1].y);
 			//dda(800, 800, 100, 100);
 			
 			i=0;
